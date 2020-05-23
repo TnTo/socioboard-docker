@@ -1,0 +1,135 @@
+version: '3'
+
+services:
+  
+  #php
+  socioboard-php:
+    image: socioboard-php
+    build:
+      context: .
+      dockerfile: php/Dockerfile
+    networks:
+      backend:
+    volumes:
+      - socioboard-php-data:/var/www/html/storage
+      - socioboard-php-root:/var/www/html
+    depends_on: 
+      - mariadb
+      - redis
+      - socioboard-api-user
+      - socioboard-api-feeds
+      - socioboard-api-notification
+      - socioboard-api-publish
+
+  #api
+  socioboard-api-user:
+    image: socioboard-api-user
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+      args: 
+      - API_NAME=user
+    networks:
+      - backend
+    depends_on: 
+      - mariadb
+      - mongodb
+
+  socioboard-api-feeds:
+    image: socioboard-api-feeds
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+      args: 
+      - API_NAME=feeds
+    networks:
+      - backend
+    depends_on: 
+      - mariadb
+      - mongodb
+
+  socioboard-api-notification:
+    image: socioboard-api-notification
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+      args: 
+        - API_NAME=notification
+    networks:
+      - backend
+    depends_on: 
+      - mariadb
+      - mongodb
+
+  socioboard-api-publish:
+    image: socioboard-api-publish
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+      args: 
+      - API_NAME=publish
+    networks:
+      - backend
+    depends_on: 
+      - mariadb
+      - mongodb
+  
+  #nginx
+  web:
+    image: nginx:alpine
+    networks:
+      backend:
+      frontend:
+        ipv4_address: 172.10.0.2
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
+      - socioboard-php-root:/var/www/html:ro
+    depends_on: 
+      - socioboard-php
+
+  #certbot
+
+  #mariadb
+  mariadb:
+    image: mariadb
+    networks: 
+      - backend
+    volumes: 
+      - mariadb-data:/var/lib/mysql
+    env_file:  
+      - mariadb/.env
+
+  #mongodb
+  mongodb:
+    image: mongo
+    networks: 
+      - backend
+    volumes:
+      - mongodb-data:/data/db
+    env_file: 
+      - mongodb/.env
+
+  #redis
+  redis:
+    image: redis:alpine
+    networks: 
+      - backend
+
+  #sendgrid  
+  
+networks:
+  backend:
+    internal: true
+  frontend:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.10.0.0/24"
+
+volumes: 
+  socioboard-php-data:
+  socioboard-php-root:
+  mariadb-data:
+  mongodb-data:

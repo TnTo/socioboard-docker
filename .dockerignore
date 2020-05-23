@@ -1,0 +1,9 @@
+./Socioboard-4.0/socioboard-web-php/.editorconfig
+./Socioboard-4.0/socioboard-web-php/.gitattributes
+./Socioboard-4.0/socioboard-web-php/.gitignore
+./Socioboard-4.0/socioboard-web-php/.environmentfile.env
+./Socioboard-4.0/socioboard-api/library/sequelize-cli/config.json
+./Socioboard-4.0/socioboard-api/*/config/config.json
+./Socioboard-4.0/socioboard-api/*/config/development.json
+./.gitmodules
+./.gitignore
