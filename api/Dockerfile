@@ -3,12 +3,12 @@ ENV node_env=development
 WORKDIR /home/node/app
 COPY Socioboard-4.0/socioboard-api/library/ /home/node/app/library/
 COPY api/config.json /home/node/app/library/sequelize-cli/config/config.json
-RUN npm install -g sequelize-cli nodemon; \
+RUN npm install -g sequelize-cli; \
     cd library; npm install; npm audit fix; cd ..
 RUN cd library/sequelize-cli; sequelize db:migrate; sequelize db:seed —seed 20190213051930-initialize_application_info.js; cd ../..
 EXPOSE 3000
 EXPOSE 5000
-CMD ["nodemon", "app.js"]
+CMD ["node", "app.js"]
 
 FROM socioboard-api
 ARG API_NAME

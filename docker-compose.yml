@@ -10,6 +10,10 @@ services:
       dockerfile: php/Dockerfile
     networks:
       backend:
+      frontend:
+        ipv4_address: 172.10.0.2
+    ports:
+      - "80:80"
     volumes:
       - socioboard-php-data:/var/www/html/storage
       - socioboard-php-root:/var/www/html
@@ -73,21 +77,6 @@ services:
     depends_on: 
       - mariadb
       - mongodb
-  
-  #nginx
-  web:
-    image: nginx:alpine
-    networks:
-      backend:
-      frontend:
-        ipv4_address: 172.10.0.2
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/site.conf:/etc/nginx/conf.d/site.conf
-      - socioboard-php-root:/var/www/html:ro
-    depends_on: 
-      - socioboard-php
 
   #certbot
 
